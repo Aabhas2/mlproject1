@@ -3,6 +3,7 @@ import sys
 import mlflow
 import dagshub
 import numpy as np
+import joblib
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -129,16 +130,24 @@ class ModelTrainer:
                 mlflow.log_metric('r2',r2)
                 mlflow.log_metric('mae',mae)
 
+                # ✅ Save locally
+                os.makedirs("models", exist_ok=True)
+                model_path = os.path.join("models", f"{best_model_name}.pkl")
+                joblib.dump(best_model, model_path)
+
+                # ✅ Log as artifact (DagsHub supports this)
+                mlflow.log_artifact(model_path, artifact_path="model")
+
                 # Model registry does not work with file store 
-                if tracking_url_type_store != "file":
+                # if tracking_url_type_store != "file":
 
                     # Register the model
                     # There are other ways to use the Model Registry, which depends on the use case,
                     # please refer to the doc for more information:
                     # https://mlflow.org/docs/latest/model-registry.html#api-workflow
-                    mlflow.sklearn.log_model(best_model,artifact_path='model')
-                else:
-                    mlflow.sklearn.log_model(best_model,'model')
+                    # mlflow.sklearn.log_model(best_model,artifact_path='model')
+                # else:
+                    # mlflow.sklearn.log_model(best_model,'model')
 
             if best_model_score < 0.6:
                 raise CustomException("No best model found")
