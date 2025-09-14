@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DataIngestionConfig: 
-    train_data_path:str = os.path.join('artifact','train.csv')
+    train_data_path:str = os.path.join('artifact','train.csv') 
     test_data_path:str = os.path.join('artifact','test.csv')
     raw_data_path:str = os.path.join('artifact','raw.csv')
 
@@ -23,7 +23,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         try:
             # Reading the data from mysql 
-            df = read_sql_data()
+            df = pd.read_csv(os.path.join('notebook/data','raw.csv'))
             logging.info("Reading completed from mysql database")
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)
